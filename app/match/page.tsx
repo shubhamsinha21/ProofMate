@@ -14,28 +14,42 @@ export default function MatchPage() {
   const [matches, setMatches] = useState<Match[]>([]);
 
   const handleSubmit = (data: Match) => {
-    // For now, dummy matches
-    setMatches([
+    const allUsers = [
       { name: "Alice", skills: "React, Node", role: "frontend", goal: "win" },
       { name: "Bob", skills: "Python, AI", role: "AI", goal: "learn" },
-      { name: "Charlie", skills: "Solidity, Ethereum", role: "blockchain", goal: "win" },
-    ]);
+      {
+        name: "Charlie",
+        skills: "Solidity, Ethereum",
+        role: "blockchain",
+        goal: "win",
+      },
+    ];
+
+    const userSkills = data.skills.toLowerCase().split(",");
+
+    const filtered = allUsers.filter((u) => {
+      const skillsMatch = userSkills.some((skill) =>
+        u.skills.toLowerCase().includes(skill.trim())
+      );
+
+      const roleMatch = u.role === data.role.toLowerCase();
+      const goalMatch = u.goal === data.goal.toLowerCase();
+
+      return skillsMatch || roleMatch || goalMatch;
+    });
+
+    setMatches(filtered);
   };
 
   return (
     <main className="min-h-screen p-10">
-      <h2 className="text-2xl font-bold mb-4">
-        Find Compatible Teammates
-      </h2>
+      <h2 className="text-2xl font-bold mb-4">Find Compatible Teammates</h2>
       <SkillForm onSubmit={handleSubmit} />
 
       {matches.length > 0 && (
         <div className="mt-8 grid gap-4">
           {matches.map((m, i) => (
-            <div
-              key={i}
-              className="border p-4 rounded-lg shadow-sm bg-white"
-            >
+            <div key={i} className="border p-4 rounded-lg shadow-sm bg-white">
               <h3 className="font-bold">{m.name}</h3>
               <p>Skills: {m.skills}</p>
               <p>Role: {m.role}</p>

@@ -37,13 +37,29 @@ export default function MatchPage() {
 
       {matches.length > 0 && (
         <div className="mt-8 grid gap-4">
-          {matches.map((m, i) => (
-            <div key={i} className="border p-4 rounded-lg shadow-sm bg-white">
-              <h3 className="font-bold">{m.name}</h3>
-              <p>Skills: {m.skills}</p>
-              <p>Role: {m.role}</p>
-              <p>Goal: {m.goal}</p>
+
+          {matches.map((m:any, i: number) => (
+
+            <div 
+              key={i} 
+              className="border p-4 rounded-lg shadow-sm bg-white"
+              >
+
+              <h3 className="font-bold">{m.user.name}</h3>
+              <p>Skills: {m.user.skills}</p>
+              <p>Role: {m.user.role}</p>
+              <p>Goal: {m.user.goal}</p>
+
+              <p className="mt-2 font-semibold">
+                Compatibility Score: {m.score}/100
+              </p>
+
+              <p className="text-sm text-gray-600">
+                Reason: {m.reason}
+              </p>
+
             </div>
+
           ))}
         </div>
       )}

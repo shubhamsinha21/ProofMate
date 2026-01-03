@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { aiMatch } from "@/lib/aiMatcher";
 
 type User = {
   name: string;
@@ -15,31 +16,13 @@ const USERS: User[] = [
 ];
 
 export async function POST(req: Request){
-    try {
-        const body = await req.json();
-        const { skills, role, goal } = body;
+    const input = await req.json();
 
-        const userSkills = skills.toLowerCase().split(",");
+    const results = aiMatch(input, USERS);
 
-        const matches = USERS.filter((u) => {
-            const skillsMatch = userSkills.some((skill: string) =>
-                u.skills.toLowerCase().includes(skill.trim())
-            );
+    return NextResponse.json({
+        success: true,
+        matches: results,
+    })
 
-            const roleMatch = u.role === role.toLowerCase();
-            const goalMatch = u.goal === goal.toLowerCase();
-
-            return skillsMatch || roleMatch || goalMatch;
-        });
-
-        return NextResponse.json({
-            success: true,
-            matches,
-        });
-    } catch (error) {
-        return NextResponse.json(
-            { success: false, error: "Invalid request" },
-            { status: 400 }
-        )
-    }
 }

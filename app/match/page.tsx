@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import SkillForm from "@/components/SkillForm";
+import { fetchMatches } from "@/lib/api";
 
 type Match = {
   name: string;
@@ -12,39 +13,27 @@ type Match = {
 
 export default function MatchPage() {
   const [matches, setMatches] = useState<Match[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (data: Match) => {
-    const allUsers = [
-      { name: "Alice", skills: "React, Node", role: "frontend", goal: "win" },
-      { name: "Bob", skills: "Python, AI", role: "AI", goal: "learn" },
-      {
-        name: "Charlie",
-        skills: "Solidity, Ethereum",
-        role: "blockchain",
-        goal: "win",
-      },
-    ];
+  const handleSubmit = async (data: Match) => {
+    setLoading(true);
 
-    const userSkills = data.skills.toLowerCase().split(",");
-
-    const filtered = allUsers.filter((u) => {
-      const skillsMatch = userSkills.some((skill) =>
-        u.skills.toLowerCase().includes(skill.trim())
-      );
-
-      const roleMatch = u.role === data.role.toLowerCase();
-      const goalMatch = u.goal === data.goal.toLowerCase();
-
-      return skillsMatch || roleMatch || goalMatch;
-    });
-
-    setMatches(filtered);
+    try {
+      const response = await fetchMatches(data);
+      setMatches(response.matches);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <main className="min-h-screen p-10">
       <h2 className="text-2xl font-bold mb-4">Find Compatible Teammates</h2>
       <SkillForm onSubmit={handleSubmit} />
+
+      {loading && <p className="mt-4">Finding matches...</p>}
 
       {matches.length > 0 && (
         <div className="mt-8 grid gap-4">
